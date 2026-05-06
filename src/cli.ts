@@ -1,8 +1,33 @@
 #!/usr/bin/env node
+import { unlinkSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import { loadConfig, type Rule } from "./config.js";
 import { getStagedFiles, getPushFiles } from "./git.js";
 import { anyFileMatches } from "./matcher.js";
 import { runResolver } from "./resolver.js";
+
+// When the user Ctrl+C's during on_resolve, git commit dies but doesn't clean
+// up its own index lock. Remove it so subsequent git commands aren't blocked.
+function removeGitLock(): void {
+  const gitDir = spawnSync("git", ["rev-parse", "--git-dir"], {
+    encoding: "utf8",
+  }).stdout?.trim();
+  if (!gitDir) return;
+  try {
+    unlinkSync(`${gitDir}/index.lock`);
+  } catch {
+    // didn't exist — no-op
+  }
+}
+
+process.on("SIGINT", () => {
+  removeGitLock();
+  process.exit(130);
+});
+process.on("SIGTERM", () => {
+  removeGitLock();
+  process.exit(143);
+});
 
 function changedFiles(scope: string): string[] {
   return scope === "push" ? getPushFiles() : getStagedFiles();

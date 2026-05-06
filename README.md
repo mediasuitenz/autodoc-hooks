@@ -196,6 +196,10 @@ npx autodoc-hooks --dry-run
 
 This is useful for verifying that template variables resolve to the expected file lists before your first real commit.
 
+### Interrupting an on_resolve run
+
+If you press Ctrl+C while `on_resolve` is running, autodoc-hooks removes `.git/index.lock` before exiting so subsequent git commands are not blocked. The interrupted commit is simply aborted — no manual cleanup is needed.
+
 ---
 
 ## Development
