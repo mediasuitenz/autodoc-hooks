@@ -29,7 +29,8 @@ def run_resolver(
 
     if resolve.type == "claude":
         prompt = resolve.prompt.format(**vars_)
-        result = subprocess.run(["claude", "-p", prompt])
+        cmd = ["claude", "-p", prompt, "--allowedTools", ",".join(resolve.allowed_tools)]
+        result = subprocess.run(cmd)
         if result.returncode == 0 and resolve.stage_after:
             _stage_matching_files(missing_docs)
         return result.returncode == 0

@@ -12,6 +12,9 @@ class ResolveConfig:
     run: str = ""
     prompt: str = ""
     stage_after: bool = True
+    # Tools claude is allowed to use without interactive approval (type=claude only).
+    # Defaults to Write+Edit since file updates are the expected resolver action.
+    allowed_tools: list[str] = field(default_factory=lambda: ["Write", "Edit"])
 
 
 @dataclass
@@ -51,6 +54,7 @@ def load_config(path: Path = Path(".doc-guard.yml")) -> Config:
                 run=resolve_data.get("run", ""),
                 prompt=resolve_data.get("prompt", ""),
                 stage_after=resolve_data.get("stage_after", True),
+                allowed_tools=resolve_data.get("allowed_tools", ["Write", "Edit"]),
             )
 
         rules.append(Rule(
