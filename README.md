@@ -30,7 +30,7 @@ npx autodoc-hooks
 # .pre-commit-config.yaml
 repos:
   - repo: https://github.com/mediasuitenz/autodoc-hooks
-    rev: v0.2.0
+    rev: v0.3.0
     hooks:
       - id: autodoc-hooks
 ```

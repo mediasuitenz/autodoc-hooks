@@ -1,6 +1,6 @@
 {
   "name": "autodoc-hooks",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Pre-commit / Husky hook that enforces documentation updates alongside source changes",
   "type": "module",
   "engines": { "node": ">=18" },
