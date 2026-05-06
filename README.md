@@ -1,24 +1,39 @@
 # autodoc-hooks
 
-A [pre-commit](https://pre-commit.com/) hook that blocks (or warns on) commits where source files changed but the corresponding documentation was not updated.
-
-Optionally runs a shell script or invokes `claude` to fix the gap automatically.
+Blocks (or warns on) commits where source files changed but the corresponding documentation was not updated. Optionally runs a shell script or invokes `claude` to fix the gap automatically.
 
 ---
 
 ## Installation
 
-Add to your project's `.pre-commit-config.yaml`:
+### Husky (recommended for Node/npm projects)
+
+```bash
+npm install -D autodoc-hooks
+```
+
+Add to `.husky/pre-commit`:
+
+```sh
+npx autodoc-hooks
+```
+
+For `scope: push` rules, also add to `.husky/pre-push`:
+
+```sh
+npx autodoc-hooks
+```
+
+### pre-commit
 
 ```yaml
+# .pre-commit-config.yaml
 repos:
-  - repo: https://github.com/your-org/autodoc-hooks
-    rev: v0.1.0
+  - repo: https://github.com/mediasuitenz/autodoc-hooks
+    rev: v0.2.0
     hooks:
       - id: autodoc-hooks
 ```
-
-Then install the hooks:
 
 ```bash
 pre-commit install
@@ -63,7 +78,7 @@ rules:
     on_failure: block   # overrides defaults.on_failure for this rule
     scope: staged       # overrides defaults.scope for this rule
     on_resolve:
-      type: script                              # script | claude
+      type: script      # script | claude
       run: ./scripts/update-docs.sh {changed_files}
 ```
 
@@ -95,8 +110,6 @@ Per-rule override of `defaults.on_failure`.
 A list of glob patterns. The rule passes if **any one** of them matches a staged/pushed file (OR logic).
 
 ### Glob syntax
-
-Patterns follow standard shell glob rules with `**` support:
 
 | Pattern | Matches |
 |---|---|
@@ -130,11 +143,11 @@ After `claude` exits, autodoc-hooks runs `git add` on any files matching `requir
 ```yaml
 on_resolve:
   type: claude
-  prompt: |
-    The following source files changed: {changed_files}
+  prompt: >-
+    The following source files changed: {changed_files}.
     Update {missing_docs} to reflect these changes.
-  stage_after: true        # auto-stage matching doc files after claude runs (default: true)
-  allowed_tools:           # tools claude may use without interactive approval (default below)
+  stage_after: true      # auto-stage matching doc files after claude runs (default: true)
+  allowed_tools:         # tools claude may use without interactive approval (default below)
     - Write
     - Edit
 ```
@@ -151,12 +164,12 @@ Available in both `run:` and `prompt:`:
 
 ---
 
-## Running tests
+## Development
 
 ```bash
-python -m venv .venv
-.venv/bin/pip install -e ".[test]"
-.venv/bin/pytest
+npm install
+npm run build   # compile TypeScript → dist/
+npm test        # run Vitest suite (47 tests)
 ```
 
-The `tests/integration/test_resolve_claude.py` evals require `claude` to be installed and authenticated. They are skipped automatically when `claude` is not on `$PATH`.
+The `tests/integration/resolve-claude.test.ts` evals require `claude` to be installed and authenticated. They are skipped automatically when `claude` is not on `$PATH`.
