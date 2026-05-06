@@ -1,7 +1,7 @@
 - id: autodoc-hooks
   name: Autodoc Hooks
   description: Block commits when source changes lack corresponding documentation updates.
-  language: python
+  language: node
   entry: autodoc-hooks
   pass_filenames: false
   always_run: true

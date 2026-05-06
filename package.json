@@ -1,0 +1,25 @@
+{
+  "name": "autodoc-hooks",
+  "version": "0.2.0",
+  "description": "Pre-commit / Husky hook that enforces documentation updates alongside source changes",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "bin": { "autodoc-hooks": "./dist/cli.js" },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "prepublishOnly": "tsc"
+  },
+  "dependencies": {
+    "js-yaml": "^4.1.0",
+    "glob": "^11.0.0"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/node": "^22.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^2.0.0"
+  }
+}
