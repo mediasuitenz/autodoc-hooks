@@ -1,0 +1,8 @@
+- id: autodoc-hooks
+  name: Autodoc Hooks
+  description: Block commits when source changes lack corresponding documentation updates.
+  language: python
+  entry: autodoc-hooks
+  pass_filenames: false
+  always_run: true
+  stages: [pre-commit, pre-push]

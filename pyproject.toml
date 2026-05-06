@@ -1,0 +1,21 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "autodoc-hooks"
+version = "0.1.0"
+description = "Pre-commit hooks that enforce documentation updates alongside source changes"
+requires-python = ">=3.9"
+dependencies = [
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+autodoc-hooks = "autodoc_hooks.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["autodoc_hooks"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
