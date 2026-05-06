@@ -167,9 +167,11 @@ on_resolve:
     The following source files changed: {changed_files}.
     Update {missing_docs} to reflect these changes.
   stage_after: true      # auto-stage matching doc files after claude runs (default: true)
-  allowed_tools:         # tools claude may use without interactive approval (default below)
+  allowed_tools:         # tools claude may use without interactive approval (default: Write, Edit, Read)
     - Write
     - Edit
+    - Read
+  timeout_ms: 120000     # kill claude if it hasn't finished within this many ms (default: 120000)
 ```
 
 ### Template variables
@@ -181,6 +183,18 @@ Available in both `run:` and `prompt:`:
 | `{changed_files}` | Space-separated list of staged source files that matched the watch pattern |
 | `{missing_docs}` | Space-separated list of `require_change_in` patterns with no staged changes |
 | `{rule_name}` | The rule's `name` field |
+
+Unknown variables (e.g. `{docs}` instead of `{missing_docs}`) are printed as a warning and left unsubstituted rather than silently passed through.
+
+### Testing your prompt without invoking claude
+
+Run with `--dry-run` to print the fully-substituted prompt without executing anything:
+
+```bash
+npx autodoc-hooks --dry-run
+```
+
+This is useful for verifying that template variables resolve to the expected file lists before your first real commit.
 
 ---
 
