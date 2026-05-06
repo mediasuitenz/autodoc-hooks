@@ -2,7 +2,7 @@
   name: Autodoc Hooks
   description: Block commits when source changes lack corresponding documentation updates.
   language: node
-  entry: autodoc-hooks
+  entry: node dist/cli.js
   pass_filenames: false
   always_run: true
   stages: [pre-commit, pre-push]

@@ -58,6 +58,8 @@ pre-commit install
 pre-commit install --hook-type pre-push   # if you use scope: push rules
 ```
 
+> **Note:** pre-commit's `language: node` installs the hook's dependencies but not the package binary itself, so the hook invokes `node dist/cli.js` directly. The `dist/` folder is committed to this repo for that reason.
+
 ---
 
 ## Configuration
