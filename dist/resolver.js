@@ -1,6 +1,12 @@
 import { spawnSync } from "node:child_process";
 import { globSync } from "glob";
 function substitute(template, vars) {
+    const known = new Set(["changed_files", "missing_docs", "rule_name"]);
+    for (const match of template.matchAll(/\{(\w+)\}/g)) {
+        if (!known.has(match[1])) {
+            process.stderr.write(`[autodoc-hooks] Warning: unknown template variable '{${match[1]}}' — it will not be substituted\n`);
+        }
+    }
     return template
         .replace(/\{changed_files\}/g, vars.changed_files)
         .replace(/\{missing_docs\}/g, vars.missing_docs)
@@ -21,7 +27,7 @@ export function runResolver(resolve, changedFiles, missingDocs, ruleName) {
     }
     if (resolve.type === "claude") {
         const prompt = substitute(resolve.prompt, vars);
-        const result = spawnSync("claude", ["-p", prompt, "--allowedTools", resolve.allowedTools.join(",")], { stdio: "inherit" });
+        const result = spawnSync("claude", ["-p", prompt, "--allowedTools", resolve.allowedTools.join(",")], { stdio: ["ignore", "inherit", "inherit"], timeout: resolve.timeoutMs });
         if (result.status === 0 && resolve.stageAfter) {
             stageMatchingFiles(missingDocs);
         }

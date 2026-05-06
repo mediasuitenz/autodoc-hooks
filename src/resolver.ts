@@ -9,6 +9,14 @@ interface TemplateVars {
 }
 
 function substitute(template: string, vars: TemplateVars): string {
+  const known = new Set(["changed_files", "missing_docs", "rule_name"]);
+  for (const match of template.matchAll(/\{(\w+)\}/g)) {
+    if (!known.has(match[1])) {
+      process.stderr.write(
+        `[autodoc-hooks] Warning: unknown template variable '{${match[1]}}' — it will not be substituted\n`
+      );
+    }
+  }
   return template
     .replace(/\{changed_files\}/g, vars.changed_files)
     .replace(/\{missing_docs\}/g, vars.missing_docs)
@@ -40,7 +48,7 @@ export function runResolver(
     const result = spawnSync(
       "claude",
       ["-p", prompt, "--allowedTools", resolve.allowedTools.join(",")],
-      { stdio: "inherit" }
+      { stdio: ["ignore", "inherit", "inherit"], timeout: resolve.timeoutMs }
     );
     if (result.status === 0 && resolve.stageAfter) {
       stageMatchingFiles(missingDocs);

@@ -4,6 +4,7 @@ export interface ResolveConfig {
     prompt: string;
     stageAfter: boolean;
     allowedTools: string[];
+    timeoutMs: number;
 }
 export interface Rule {
     name: string;

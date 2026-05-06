@@ -24,7 +24,9 @@ export function loadConfig(configPath = ".doc-guard.yml") {
                 allowedTools: resolveData.allowed_tools ?? [
                     "Write",
                     "Edit",
+                    "Read",
                 ],
+                timeoutMs: resolveData.timeout_ms ?? 120_000,
             }
             : null;
         return {

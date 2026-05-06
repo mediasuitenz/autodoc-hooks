@@ -14,7 +14,27 @@ function missingDocs(rule: Rule, changed: string[]): string[] {
   return rule.requireChangeIn;
 }
 
+function substitute(template: string, vars: Record<string, string>): string {
+  return template
+    .replace(/\{changed_files\}/g, vars.changed_files ?? "")
+    .replace(/\{missing_docs\}/g, vars.missing_docs ?? "")
+    .replace(/\{rule_name\}/g, vars.rule_name ?? "");
+}
+
+function warnUnknownVars(template: string): void {
+  const known = new Set(["changed_files", "missing_docs", "rule_name"]);
+  for (const match of template.matchAll(/\{(\w+)\}/g)) {
+    if (!known.has(match[1])) {
+      console.warn(
+        `  [autodoc-hooks] Warning: unknown template variable '{${match[1]}}' in prompt/run — it will not be substituted`
+      );
+    }
+  }
+}
+
 function main(): void {
+  const dryRun = process.argv.includes("--dry-run");
+
   let config;
   try {
     config = loadConfig();
@@ -34,7 +54,29 @@ function main(): void {
     console.log(`  Source changes in: ${rule.watch.join(", ")}`);
     console.log(`  No doc changes in: ${missing.join(", ")}`);
 
+    if (dryRun && rule.onResolve) {
+      const vars = {
+        changed_files: changed.join(" "),
+        missing_docs: missing.join(" "),
+        rule_name: rule.name,
+      };
+      const field = rule.onResolve.type === "claude" ? "prompt" : "run";
+      const template =
+        rule.onResolve.type === "claude"
+          ? rule.onResolve.prompt
+          : rule.onResolve.run;
+      warnUnknownVars(template);
+      console.log(`  [dry-run] on_resolve ${field}:`);
+      console.log(`    ${substitute(template, vars)}`);
+      continue;
+    }
+
     if (rule.onResolve) {
+      const template =
+        rule.onResolve.type === "claude"
+          ? rule.onResolve.prompt
+          : rule.onResolve.run;
+      warnUnknownVars(template);
       console.log(`  Running auto-resolve (${rule.onResolve.type})...`);
       const success = runResolver(rule.onResolve, changed, missing, rule.name);
 

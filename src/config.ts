@@ -7,6 +7,7 @@ export interface ResolveConfig {
   prompt: string;
   stageAfter: boolean;
   allowedTools: string[];
+  timeoutMs: number;
 }
 
 export interface Rule {
@@ -50,7 +51,9 @@ export function loadConfig(configPath = ".doc-guard.yml"): Config {
             allowedTools: (resolveData.allowed_tools as string[]) ?? [
               "Write",
               "Edit",
+              "Read",
             ],
+            timeoutMs: (resolveData.timeout_ms as number) ?? 120_000,
           }
         : null;
 
