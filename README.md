@@ -8,21 +8,39 @@ Blocks (or warns on) commits where source files changed but the corresponding do
 
 ### Husky (recommended for Node/npm projects)
 
+**1. Install Husky and autodoc-hooks:**
+
 ```bash
-npm install -D autodoc-hooks
+npm install -D husky autodoc-hooks
 ```
 
-Add to `.husky/pre-commit`:
+**2. Initialise Husky** (creates `.husky/` and wires up the `prepare` script):
 
-```sh
-npx autodoc-hooks
+```bash
+npx husky init
 ```
 
-For `scope: push` rules, also add to `.husky/pre-push`:
+**3. Add autodoc-hooks to the pre-commit hook:**
 
-```sh
-npx autodoc-hooks
+```bash
+echo "npx autodoc-hooks" >> .husky/pre-commit
 ```
+
+**4. For `scope: push` rules**, also add a pre-push hook:
+
+```bash
+echo "npx autodoc-hooks" > .husky/pre-push
+chmod +x .husky/pre-push
+```
+
+**5. Commit the Husky config:**
+
+```bash
+git add .husky package.json
+git commit -m "chore: add autodoc-hooks pre-commit hook"
+```
+
+After this, `npx autodoc-hooks` runs automatically on every `git commit` (and `git push` if you added the pre-push hook). Other developers get the hooks automatically when they run `npm install`.
 
 ### pre-commit
 
